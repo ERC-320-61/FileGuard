@@ -1,0 +1,78 @@
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfplan
+*.plan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraformrc
+terraform.rc
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.env/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Operating systems
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Temporary files and logs
+*.tmp
+*.temp
+*.log
+tmp/
+temp/
+
+# Local secrets and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+credentials/
+
+# Scanner and analysis output
+scanner-output/
+analysis-output/
+reports/
+artifacts/
+quarantine/
+
+# Malware and local test samples (retain directory placeholders only)
+samples/clean/*
+samples/suspicious/*
+samples/test-files/*
+!samples/clean/.gitkeep
+!samples/suspicious/.gitkeep
+!samples/test-files/.gitkeep
+*.malware
+*.infected
+*.virus
+eicar.com
+eicar.com.txt
