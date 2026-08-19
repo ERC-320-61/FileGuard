@@ -1,0 +1,76 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fileguard.local/schemas/classifier-result.schema.json",
+  "title": "FileGuard Classifier Result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "scanner", "scanner_version", "status"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "scanner": {"const": "classifier"},
+    "scanner_version": {"type": "string", "minLength": 1},
+    "status": {"enum": ["complete", "partial", "error"]},
+    "started_at": {"type": "string", "format": "date-time"},
+    "completed_at": {"type": "string", "format": "date-time"},
+    "sample": {"$ref": "#/$defs/sample"},
+    "classification": {"$ref": "#/$defs/classification"},
+    "warnings": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true},
+    "error": {"$ref": "#/$defs/error"}
+  },
+  "allOf": [
+    {
+      "if": {"properties": {"status": {"enum": ["complete", "partial"]}}, "required": ["status"]},
+      "then": {"required": ["sample", "classification"]}
+    },
+    {
+      "if": {"properties": {"status": {"const": "error"}}, "required": ["status"]},
+      "then": {"required": ["error"]}
+    }
+  ],
+  "$defs": {
+    "sample": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "size_bytes", "hashes"],
+      "properties": {
+        "filename": {"type": "string", "minLength": 1},
+        "extension": {"type": ["string", "null"]},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "hashes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["md5", "sha1", "sha256"],
+          "properties": {
+            "md5": {"type": "string", "pattern": "^[A-Fa-f0-9]{32}$"},
+            "sha1": {"type": "string", "pattern": "^[A-Fa-f0-9]{40}$"},
+            "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"}
+          }
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["detected_type", "mime_type", "magic_description", "extension_mismatch", "is_archive", "is_encrypted"],
+      "properties": {
+        "detected_type": {"type": "string", "minLength": 1},
+        "mime_type": {"type": "string", "minLength": 1},
+        "magic_description": {"type": "string", "minLength": 1},
+        "extension_mismatch": {"type": "boolean"},
+        "is_archive": {"type": "boolean"},
+        "archive_format": {"type": ["string", "null"]},
+        "is_encrypted": {"type": ["boolean", "null"], "description": "Null means encryption status could not be determined."},
+        "routing_tags": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      }
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["code", "message"],
+      "properties": {
+        "code": {"type": "string", "minLength": 1},
+        "message": {"type": "string", "minLength": 1}
+      }
+    }
+  }
+}
