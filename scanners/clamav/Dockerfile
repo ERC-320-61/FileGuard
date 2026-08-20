@@ -1,4 +1,4 @@
-FROM clamav/clamav:1.4.3
+FROM clamav/clamav:1.4.3@sha256:75fb5fd95fcbe1d7e6d240c369c1572b686ee2c95949d1042b5148de8eddebb4
 
 USER root
 
