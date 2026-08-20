@@ -63,6 +63,8 @@ analysis-output/
 reports/
 artifacts/
 quarantine/
+# PDF Analysis extracted child artifacts
+pdf-children/
 
 # Malware and local test samples (retain directory placeholders only)
 samples/clean/*
