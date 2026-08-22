@@ -1,0 +1,266 @@
+{
+  "file_id": "90ae851a-7fef-4e90-aee0-b08b5f97c12f",
+  "file_name": "image.jpg",
+  "file_size": 40782,
+  "files_seen": 1,
+  "hashes": [
+    [
+      "md5",
+      "c5436ed10a7eaade9f28f2c70f78ce89"
+    ],
+    [
+      "sha1",
+      "49eafbd8288595439f39c02dd7bf7c7680f287ff"
+    ],
+    [
+      "sha256",
+      "2a8623fb3b3f9655d422baf8507d5458419e2abc52016e50c88f0097fea398a2"
+    ],
+    [
+      "ssdeep",
+      "768:hYyRO29usokCvJ4/5gr1CAQ3kbfSC7x6SDm9k0WktXEy/UAzew/bpq:hlQsokCvK6CXUb6C16SuJWkhEZU/bpq"
+    ],
+    [
+      "tlsh",
+      "T16B03E1B1CF0F1687F570C5388593D615E2CEE016E3E6BCAF9468FA2546545D22FAD20C"
+    ]
+  ],
+  "highest_vt_count": 0,
+  "highest_vt_sha256": "2a8623fb3b3f9655d422baf8507d5458419e2abc52016e50c88f0097fea398a2",
+  "id": 1,
+  "insights": [
+    "The file has an entropy value greater than 7, which may indicate encryption or packing."
+  ],
+  "iocs": [],
+  "mime_types": [
+    "image/jpeg"
+  ],
+  "processed_at": "Sat, 22 Aug 2026 02:31:00 GMT",
+  "s3_expires_at": null,
+  "s3_key": null,
+  "scanners_run": [
+    "ScanQr",
+    "ScanTlsh",
+    "ScanClamav",
+    "ScanHeader",
+    "ScanHash",
+    "ScanEntropy",
+    "ScanFooter",
+    "ScanJpeg",
+    "ScanLsb",
+    "ScanYara",
+    "ScanExiftool",
+    "ScanOcr"
+  ],
+  "strelka_response": [
+    {
+      "file": {
+        "depth": 0,
+        "flavors": {
+          "mime": [
+            "image/jpeg"
+          ],
+          "yara": [
+            "jpeg_file"
+          ]
+        },
+        "name": "image.jpg",
+        "scanners": [
+          "ScanClamav",
+          "ScanEntropy",
+          "ScanExiftool",
+          "ScanFooter",
+          "ScanHash",
+          "ScanHeader",
+          "ScanJpeg",
+          "ScanLsb",
+          "ScanOcr",
+          "ScanQr",
+          "ScanTlsh",
+          "ScanYara"
+        ],
+        "size": 40782,
+        "tree": {
+          "node": "90ae851a-7fef-4e90-aee0-b08b5f97c12f",
+          "root": "90ae851a-7fef-4e90-aee0-b08b5f97c12f"
+        }
+      },
+      "insights": [
+        "The file has an entropy value greater than 7, which may indicate encryption or packing."
+      ],
+      "request": {
+        "attributes": {
+          "filename": "image.jpg",
+          "metadata": {
+            "client_hostname": "2cf1b22be16e",
+            "client_name": "fileshot-webui",
+            "client_user_name": "admin",
+            "client_version": "2.43",
+            "user_name": "admin"
+          }
+        },
+        "client": "fileshot-webui",
+        "id": "90ae851a-7fef-4e90-aee0-b08b5f97c12f",
+        "time": 1787365860
+      },
+      "scan": {
+        "clamav": {
+          "Data read": "39.83 KiB (ratio 1.00",
+          "Data scanned": "39.83 KiB",
+          "End Date": "2026",
+          "Engine version": "1.5.3",
+          "Infected files": "0",
+          "Known viruses": "3628022",
+          "Scanned directories": "0",
+          "Scanned files": "1",
+          "Start Date": "2026",
+          "Time": "6.159 sec (0 m 6 s)",
+          "elapsed": 8.949213
+        },
+        "entropy": {
+          "elapsed": 0.000125,
+          "entropy": 7.95227365276721
+        },
+        "exiftool": {
+          "bitspersample": 8,
+          "bluematrixcolumn": "0.14307 0.06061 0.7141",
+          "bluetrc": "(Binary data 2060 bytes, use -b option to extract)",
+          "cmmflags": "Not Embedded, Independent",
+          "colorcomponents": 3,
+          "colorspacedata": "RGB ",
+          "connectionspaceilluminant": "0.9642 1 0.82491",
+          "deviceattributes": "Reflective, Glossy, Positive, Color",
+          "devicemanufacturer": "Hewlett-Packard",
+          "devicemfgdesc": "IEC http://www.iec.ch",
+          "devicemodel": "sRGB",
+          "devicemodeldesc": "IEC 61966-2.1 Default RGB colour space - sRGB",
+          "directory": "/tmp",
+          "elapsed": 0.072242,
+          "encodingprocess": "Progressive DCT, Huffman coding",
+          "exiftoolversion": 12.6,
+          "fileaccessdate": "2026:08:22 02:34:49+00:00",
+          "fileinodechangedate": "2026:08:22 02:34:49+00:00",
+          "filemodifydate": "2026:08:22 02:34:49+00:00",
+          "filename": "tmpnpfdo505",
+          "filepermissions": "-rw-------",
+          "filesize": "41 kB",
+          "filetype": "JPEG",
+          "filetypeextension": "jpg",
+          "greenmatrixcolumn": "0.38515 0.71687 0.09708",
+          "greentrc": "(Binary data 2060 bytes, use -b option to extract)",
+          "imageheight": 512,
+          "imagesize": "640x512",
+          "imagewidth": 640,
+          "jfifversion": 1.01,
+          "luminance": "76.03647 80 87.12462",
+          "measurementbacking": "0 0 0",
+          "measurementflare": "0.999%",
+          "measurementgeometry": "Unknown",
+          "measurementilluminant": "D65",
+          "measurementobserver": "CIE 1931",
+          "mediablackpoint": "0 0 0",
+          "mediawhitepoint": "0.95045 1 1.08905",
+          "megapixels": 0.328,
+          "mimetype": "image/jpeg",
+          "primaryplatform": "Microsoft Corporation",
+          "profileclass": "Display Device Profile",
+          "profilecmmtype": "Linotronic",
+          "profileconnectionspace": "XYZ ",
+          "profilecopyright": "Copyright (c) 1998 Hewlett-Packard Company",
+          "profilecreator": "Hewlett-Packard",
+          "profiledatetime": "1998:02:09 06:49:00",
+          "profiledescription": "sRGB IEC61966-2.1",
+          "profilefilesignature": "acsp",
+          "profileid": 0,
+          "profileversion": "2.1.0",
+          "redmatrixcolumn": "0.43607 0.22249 0.01392",
+          "redtrc": "(Binary data 2060 bytes, use -b option to extract)",
+          "renderingintent": "Perceptual",
+          "resolutionunit": "inches",
+          "sourcefile": "/tmp/tmpnpfdo505",
+          "technology": "Cathode Ray Tube Display",
+          "viewingconddesc": "Reference Viewing Condition in IEC61966-2.1",
+          "viewingcondilluminant": "19.6445 20.3718 16.8089",
+          "viewingcondilluminanttype": "D50",
+          "viewingcondsurround": "3.92889 4.07439 3.36179",
+          "xresolution": 72,
+          "ycbcrsubsampling": "YCbCr4:2:0 (2 2)",
+          "yresolution": 72
+        },
+        "footer": {
+          "backslash": "\\x97\\xa2\\xf4=D\\xa9R\\xa5u\\xbd5\\x03\\xa45H\\x9a\\xa4H\\x9d\\t\\xd2=W.\\\\\\xb9r\\xfa\\x0e\\xa0\\xeaz\\x13E\\x1a\\xd4\\xa9R\\xa5iz_\\xa6\\x1d\\x14\\xc0\\xd4\\x9f\\xff\\xd9",
+          "elapsed": 5.5e-05,
+          "footer": "\ufffd\ufffd\ufffd=D\ufffdR\ufffdu\ufffd5\u0003\ufffd5H\ufffd\ufffdH\ufffd\t\ufffd=W.\\\ufffdr\ufffd\u000e\ufffd\ufffdz\u0013E\u001a\u0529R\ufffdiz_\ufffd\u001d\u0014\ufffd\u051f\ufffd\ufffd"
+        },
+        "hash": {
+          "elapsed": 0.010599,
+          "md5": "c5436ed10a7eaade9f28f2c70f78ce89",
+          "sha1": "49eafbd8288595439f39c02dd7bf7c7680f287ff",
+          "sha256": "2a8623fb3b3f9655d422baf8507d5458419e2abc52016e50c88f0097fea398a2",
+          "ssdeep": "768:hYyRO29usokCvJ4/5gr1CAQ3kbfSC7x6SDm9k0WktXEy/UAzew/bpq:hlQsokCvK6CXUb6C16SuJWkhEZU/bpq",
+          "tlsh": "T16B03E1B1CF0F1687F570C5388593D615E2CEE016E3E6BCAF9468FA2546545D22FAD20C"
+        },
+        "header": {
+          "backslash": "\\xff\\xd8\\xff\\xe0\\x00\\x10JFIF\\x00\\x01\\x01\\x01\\x00H\\x00H\\x00\\x00\\xff\\xe2\\x0cXICC_PROFILE\\x00\\x01\\x01\\x00\\x00\\x0cHLino\\x02\\x10\\x00\\x00",
+          "elapsed": 3.7e-05,
+          "header": "\ufffd\ufffd\ufffd\ufffd\u0000\u0010JFIF\u0000\u0001\u0001\u0001\u0000H\u0000H\u0000\u0000\ufffd\ufffd\fXICC_PROFILE\u0000\u0001\u0001\u0000\u0000\fHLino\u0002\u0010\u0000\u0000"
+        },
+        "jpeg": {
+          "elapsed": 0.001517,
+          "flags": [
+            "no_trailer"
+          ]
+        },
+        "lsb": {
+          "elapsed": 0.007579,
+          "lsb": true
+        },
+        "ocr": {
+          "base64_thumbnail": "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",
+          "elapsed": 0.420064,
+          "render": {
+            "dpi": 300,
+            "format": "png",
+            "height": 2134,
+            "source": "pdf",
+            "width": 2667
+          }
+        },
+        "qr": {
+          "elapsed": 0.015186
+        },
+        "tlsh": {
+          "elapsed": 0.010913
+        },
+        "yara": {
+          "elapsed": 0.021198,
+          "flags": [
+            "compiled_load_error_could not open file \"/etc/strelka/yara/rules.compiled\""
+          ],
+          "matches": [
+            "test"
+          ],
+          "rules_loaded": 1
+        }
+      }
+    }
+  ],
+  "submitted_at": "Sat, 22 Aug 2026 02:31:00 GMT",
+  "submitted_by_user_id": 1,
+  "submitted_description": "No Description Provided",
+  "submitted_from_client": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+  "submitted_from_ip": "172.18.0.1",
+  "submitted_type": "api",
+  "user": {
+    "files_submitted": 1,
+    "first_name": "local",
+    "id": 1,
+    "last_login": "Sat, 22 Aug 2026 02:20:09 GMT",
+    "last_name": "local",
+    "login_count": 1,
+    "user_cn": "admin"
+  },
+  "yara_hits": [
+    "test"
+  ]
+}

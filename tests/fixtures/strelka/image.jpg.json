@@ -1,0 +1,34 @@
+{
+  "file": {
+    "depth": 0,
+    "flavors": {"mime": ["image/jpeg"], "yara": ["jpeg"]},
+    "name": "image.jpg",
+    "scanners": ["ScanHash", "ScanClamav", "ScanYara", "ScanEntropy", "ScanExiftool"],
+    "size": 381944,
+    "source": "",
+    "tree": {"node": "request-image-001", "parent": "", "root": "request-image-001"}
+  },
+  "scan": {
+    "hash": {
+      "md5": "0123456789abcdef0123456789abcdef",
+      "sha1": "0123456789abcdef0123456789abcdef01234567",
+      "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+      "ssdeep": "6144:reconstructed-fixture:reconstructed-fixture",
+      "tlsh": "T1A2B3C4D5E6F77889900AABBCCDDEEFF00112233445566778899AABBCCDDEEFF0011223",
+      "flags": [],
+      "elapsed": 0.01
+    },
+    "clamav": {"Infected files": "0", "Engine version": "1.4.2", "flags": [], "elapsed": 0.2},
+    "yara": {
+      "matches": ["test"],
+      "rules_loaded": 1,
+      "flags": ["compiled_load_error_reconstructed fixture warning"],
+      "tags": [],
+      "hex": [{"rule": "test", "dump": ["omitted from normalized evidence"]}],
+      "elapsed": 0.03
+    },
+    "entropy": {"entropy": 7.95227365276721, "flags": [], "elapsed": 0.01},
+    "exiftool": {"EXIF": {"large": "metadata not copied"}, "flags": [], "elapsed": 0.1},
+    "insights": ["recognized_image"]
+  }
+}

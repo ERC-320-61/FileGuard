@@ -1,0 +1,1 @@
+"""FileGuard evidence normalization adapters."""

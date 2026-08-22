@@ -1,0 +1,93 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fileguard.local/schemas/static-evidence.schema.json",
+  "title": "FileGuard Normalized Static Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source", "status", "request_id", "file", "hashes", "clamav", "yara", "entropy", "insights", "warnings", "errors"],
+  "properties": {
+    "schema_version": {"const": "1.0.0"},
+    "source": {"const": "strelka"},
+    "status": {"enum": ["complete", "incomplete", "error"]},
+    "request_id": {"type": "string", "minLength": 1},
+    "file": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["filename", "size_bytes", "depth", "flavors", "scanners_run"],
+      "properties": {
+        "filename": {"type": "string"},
+        "size_bytes": {"type": "integer", "minimum": 0},
+        "depth": {"type": "integer", "minimum": 0},
+        "flavors": {"type": "object", "additionalProperties": {"type": "array", "items": {"type": "string"}}},
+        "scanners_run": {"type": "array", "items": {"type": "string", "minLength": 1}, "uniqueItems": true}
+      }
+    },
+    "hashes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["md5", "sha1", "sha256", "ssdeep", "tlsh"],
+      "properties": {
+        "md5": {"type": "string", "pattern": "^[A-Fa-f0-9]{32}$"},
+        "sha1": {"type": "string", "pattern": "^[A-Fa-f0-9]{40}$"},
+        "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+        "ssdeep": {"type": "string", "minLength": 1},
+        "tlsh": {"type": "string", "minLength": 1}
+      }
+    },
+    "clamav": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "detected", "engine_version", "warnings", "errors"],
+      "properties": {
+        "status": {"enum": ["complete", "incomplete", "error"]},
+        "detected": {"type": ["boolean", "null"]},
+        "engine_version": {"type": ["string", "null"]},
+        "warnings": {"$ref": "#/$defs/conditions"},
+        "errors": {"$ref": "#/$defs/conditions"}
+      }
+    },
+    "yara": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "matches", "rules_loaded", "flags", "warnings", "errors"],
+      "properties": {
+        "status": {"enum": ["complete", "incomplete", "error"]},
+        "matches": {"type": "array", "items": {"type": "string"}},
+        "rules_loaded": {"type": "integer", "minimum": 0},
+        "flags": {"type": "array", "items": {"type": "string"}},
+        "warnings": {"$ref": "#/$defs/conditions"},
+        "errors": {"$ref": "#/$defs/conditions"}
+      }
+    },
+    "entropy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "value", "severity", "warnings", "errors"],
+      "properties": {
+        "status": {"enum": ["complete", "incomplete", "error"]},
+        "value": {"type": ["number", "null"], "minimum": 0, "maximum": 8},
+        "severity": {"const": "informational"},
+        "warnings": {"$ref": "#/$defs/conditions"},
+        "errors": {"$ref": "#/$defs/conditions"}
+      }
+    },
+    "insights": {"type": "array"},
+    "warnings": {"$ref": "#/$defs/conditions"},
+    "errors": {"$ref": "#/$defs/conditions"}
+  },
+  "$defs": {
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["scanner", "code"],
+        "properties": {
+          "scanner": {"type": "string", "minLength": 1},
+          "code": {"type": "string", "minLength": 1},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}
