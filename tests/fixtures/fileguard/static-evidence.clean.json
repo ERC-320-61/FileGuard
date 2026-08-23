@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "source": "strelka",
+  "status": "complete",
+  "request_id": "request-clean-001",
+  "file": {
+    "filename": "clean-image.jpg",
+    "size_bytes": 381944,
+    "depth": 0,
+    "flavors": {"mime": ["image/jpeg"], "yara": ["jpeg"]},
+    "scanners_run": ["hash", "clamav", "yara", "entropy"]
+  },
+  "hashes": {
+    "md5": "0123456789abcdef0123456789abcdef",
+    "sha1": "0123456789abcdef0123456789abcdef01234567",
+    "sha256": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef",
+    "ssdeep": "6144:clean-fixture:clean-fixture",
+    "tlsh": "T1A2B3C4D5E6F77889900AABBCCDDEEFF00112233445566778899AABBCCDDEEFF0011223"
+  },
+  "clamav": {"status": "complete", "detected": false, "engine_version": "1.4.2", "warnings": [], "errors": []},
+  "yara": {"status": "complete", "matches": [], "rules_loaded": 1, "flags": [], "warnings": [], "errors": []},
+  "entropy": {"status": "complete", "value": 5.25, "severity": "informational", "warnings": [], "errors": []},
+  "insights": [],
+  "warnings": [],
+  "errors": []
+}
