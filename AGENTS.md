@@ -42,7 +42,9 @@ See [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) for the full checkpoint and i
 
 ## Strelka/YARA invariant
 
-FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. In `strelka/configs/python/backend/backend.yaml`, `ScanYara.options.compiled.enabled` must remain `False` unless a valid `rules.compiled` file is deliberately built and deployed — enabling it without a real compiled file reintroduces `compiled_load_error` and makes FileGuard classify scans as `INCOMPLETE`. The original Strelka quickstart rule (`rule test { condition: true }`, which matches every file and blocks `CLEAN`) must not be restored to `strelka/configs/python/backend/yara/rules.yara`.
+FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. `config/strelka/backend.yaml` is the FileGuard-owned, Git-tracked source of truth for the Strelka backend config — `ScanYara.options.compiled.enabled` must remain `False` there unless a valid `rules.compiled` file is deliberately built and deployed; enabling it without a real compiled file reintroduces `compiled_load_error` and makes FileGuard classify scans as `INCOMPLETE`. The original Strelka quickstart rule (`rule test { condition: true }`, which matches every file and blocks `CLEAN`) must not be restored to `config/strelka/yara/rules.yara`.
+
+`config/strelka/` is only authoritative when the running Strelka backend is started with `docker-compose.strelka.override.yml` layered on top of `strelka/build/docker-compose-no-build.yaml` (see that file's header comment for the exact command). Starting Strelka from the upstream compose files alone still uses the vendor configuration under the gitignored `strelka/` clone — do not edit files inside `strelka/` to change FileGuard behavior; edit `config/strelka/` instead. Use `docker-compose-no-build.yaml` (prebuilt image), not `docker-compose.yaml` (build-from-source, which triggers the upstream Strelka test suite — unrelated to FileGuard and not this project's concern).
 
 ## Important directories
 
@@ -52,7 +54,8 @@ FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. In
 - `schemas/` — evidence and decision schemas. `static-evidence.schema.json` is the current schema in active use.
 - `tests/` — unit tests plus real and reconstructed fixtures for the extractor, normalizer, and policy.
 - `docs/` — architecture and project documentation (this file links to it).
-- `strelka/` — local Strelka clone/dev environment (gitignored, not tracked).
+- `config/strelka/` — FileGuard-owned, Git-tracked Strelka backend config (`backend.yaml`, `yara/rules.yara`), consumed via `docker-compose.strelka.override.yml`. See Strelka/YARA invariant above.
+- `strelka/` — local Strelka clone/dev environment (gitignored, not tracked). Upstream software dependency only — not the configuration source of truth.
 - `scanners/` — **legacy/reference only.** Pre-Strelka custom scanner PoCs (capa, clamav, classifier, office-analysis, pdf-analysis, scoring-engine), retained for future Strelka gap analysis. Do not treat as part of the current pipeline.
 - `terraform/`, `kubernetes/` — placeholders for future AWS/K8s infrastructure. Mostly empty (`.gitkeep`).
 

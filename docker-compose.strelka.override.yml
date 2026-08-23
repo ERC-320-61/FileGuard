@@ -1,0 +1,28 @@
+# FileGuard-owned override for the upstream strelka/ Compose stack.
+#
+# Layers the Git-tracked config/strelka/ files onto the running `backend`
+# service so it consumes FileGuard-owned backend.yaml and yara/rules.yara
+# instead of the (gitignored, upstream) strelka/configs/python/backend/ tree.
+# Everything else under /etc/strelka/ (logging.yaml, passwords.dat,
+# suricata/, taste/, tlsh/) still comes from the vendor clone unchanged.
+#
+# config/strelka/backend.yaml and config/strelka/yara/rules.yara are only
+# authoritative when this override is used. Starting Strelka from the base
+# compose file alone still uses the vendor configuration under strelka/.
+#
+# ${PWD} requires this to be run from the FileGuard repository root, e.g.:
+#
+#   docker compose \
+#     -f strelka/build/docker-compose-no-build.yaml \
+#     -f docker-compose.strelka.override.yml \
+#     up -d --force-recreate backend
+#
+# Use the prebuilt (-no-build) stack, not strelka/build/docker-compose.yaml —
+# the build-from-source file triggers the upstream Strelka test suite, which
+# is unrelated to FileGuard configuration and is not this project's concern.
+
+services:
+  backend:
+    volumes:
+      - ${PWD}/config/strelka/backend.yaml:/etc/strelka/backend.yaml:ro
+      - ${PWD}/config/strelka/yara/rules.yara:/etc/strelka/yara/rules.yara:ro
