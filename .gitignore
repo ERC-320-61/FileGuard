@@ -79,3 +79,4 @@ samples/test-files/*
 eicar.com
 eicar.com.txt
 /strelka/
+.claude/settings.local.json
