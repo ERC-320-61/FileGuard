@@ -1,0 +1,125 @@
+{
+  "file_id": "6a71bd0a-8f97-4ba2-9f47-5d56aef3342d",
+  "file_name": "fileguard-clean-test.txt",
+  "file_size": 44,
+  "files_seen": 1,
+  "hashes": [
+    ["md5", "6e37f6c9f9a3349ee1c151f1d349aefe"],
+    ["sha1", "26cb6f2e4cec45926d9284eafd191b183e5b2c76"],
+    ["sha256", "46a216b8d14b184017ffcbefe93c47ec9b8231ac49f507c11f61ef986cbd5b50"],
+    ["ssdeep", "3:hMCEYyOoX/gMyqKFMm:huYL8gMyqWB"],
+    ["tlsh", "TNULL"]
+  ],
+  "highest_vt_count": 0,
+  "highest_vt_sha256": "46a216b8d14b184017ffcbefe93c47ec9b8231ac49f507c11f61ef986cbd5b50",
+  "id": 5,
+  "insights": [],
+  "iocs": [],
+  "mime_types": ["text/plain"],
+  "processed_at": "Sun, 23 Aug 2026 18:50:02 GMT",
+  "s3_expires_at": null,
+  "s3_key": null,
+  "scanners_run": [
+    "ScanTlsh",
+    "ScanClamav",
+    "ScanHeader",
+    "ScanHash",
+    "ScanEntropy",
+    "ScanFooter",
+    "ScanYara",
+    "ScanUrl"
+  ],
+  "strelka_response": [
+    {
+      "file": {
+        "depth": 0,
+        "flavors": {
+          "mime": ["text/plain"]
+        },
+        "name": "fileguard-clean-test.txt",
+        "scanners": [
+          "ScanClamav",
+          "ScanEntropy",
+          "ScanFooter",
+          "ScanHash",
+          "ScanHeader",
+          "ScanTlsh",
+          "ScanUrl",
+          "ScanYara"
+        ],
+        "size": 44,
+        "tree": {
+          "node": "6a71bd0a-8f97-4ba2-9f47-5d56aef3342d",
+          "root": "6a71bd0a-8f97-4ba2-9f47-5d56aef3342d"
+        }
+      },
+      "request": {
+        "attributes": {
+          "filename": "fileguard-clean-test.txt",
+          "metadata": {
+            "client_hostname": "2cf1b22be16e",
+            "client_name": "fileshot-webui",
+            "client_user_name": "admin",
+            "client_version": "2.43",
+            "user_name": "admin"
+          }
+        },
+        "client": "fileshot-webui",
+        "id": "6a71bd0a-8f97-4ba2-9f47-5d56aef3342d",
+        "time": 1787511002
+      },
+      "scan": {
+        "clamav": {
+          "Data read": "44 B (ratio 2.00",
+          "Data scanned": "88 B",
+          "End Date": "2026",
+          "Engine version": "1.5.3",
+          "Infected files": "0",
+          "Known viruses": "3628027",
+          "Scanned directories": "0",
+          "Scanned files": "1",
+          "Start Date": "2026",
+          "Time": "6.369 sec (0 m 6 s)",
+          "elapsed": 6.433434
+        },
+        "entropy": {
+          "elapsed": 0.000049,
+          "entropy": 4.036040950007145
+        },
+        "footer": {
+          "backslash": "This is a normal FileGuard validation file.\\n",
+          "elapsed": 0.000018,
+          "footer": "This is a normal FileGuard validation file.\n"
+        },
+        "hash": {
+          "elapsed": 0.009587,
+          "md5": "6e37f6c9f9a3349ee1c151f1d349aefe",
+          "sha1": "26cb6f2e4cec45926d9284eafd191b183e5b2c76",
+          "sha256": "46a216b8d14b184017ffcbefe93c47ec9b8231ac49f507c11f61ef986cbd5b50",
+          "ssdeep": "3:hMCEYyOoX/gMyqKFMm:huYL8gMyqWB",
+          "tlsh": "TNULL"
+        },
+        "header": {
+          "backslash": "This is a normal FileGuard validation file.\\n",
+          "elapsed": 0.000031,
+          "header": "This is a normal FileGuard validation file.\n"
+        },
+        "tlsh": {
+          "elapsed": 0.000047
+        },
+        "url": {
+          "elapsed": 0.000108
+        },
+        "yara": {
+          "elapsed": 0.004553,
+          "rules_loaded": 1
+        }
+      }
+    }
+  ],
+  "submitted_at": "Sun, 23 Aug 2026 18:50:02 GMT",
+  "submitted_by_user_id": 1,
+  "submitted_description": "No Description Provided",
+  "submitted_type": "api",
+  "yara_hits": []
+}
