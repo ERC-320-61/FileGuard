@@ -48,11 +48,11 @@ Conclusion vocabulary: `CLEAN`, `SUSPICIOUS`, `MALICIOUS`, `INCOMPLETE` — all 
 
 See [DECISIONS.md](DECISIONS.md) for the precedence rationale.
 
+### Local disposition executor — *implemented (local PoC)*
+
+`disposition.py`. Consumes an OPA decision and a source file path, and executes the resulting disposition against ordinary local directories: `CLEAN → clean/`; `INCOMPLETE`, `SUSPICIOUS`, `MALICIOUS → quarantine/`. Sequence: source SHA-256 → copy to a temp file in the destination directory → destination SHA-256 → compare → atomic no-overwrite publish (`os.link`) → delete source. Fails closed on any malformed/unknown/mismatched decision, destination collision, verification failure, or source-deletion failure (see [DECISIONS.md](DECISIONS.md)). This is the local equivalent of, not a replacement for, the future AWS S3 copy → verify → delete workflow — it is not yet wired into `pipeline.py`'s output.
+
 ## Planned components
-
-### Disposition worker — *planned, not implemented*
-
-Intended to consume OPA decisions and execute the resulting disposition (move/tag file, route to quarantine, trigger dynamic analysis, etc.). No code exists yet.
 
 ### CAPE dynamic analysis — *planned, not deferred*
 
@@ -60,7 +60,7 @@ Internal dynamic-analysis layer for files that are quarantined and eligible for 
 
 ### AWS services — *planned, not implemented*
 
-Target hosting for the production system: S3 (file storage), EventBridge/SQS (intake and event routing), ECR/EKS (container hosting), CloudWatch (observability), KMS (key management), DynamoDB (evidence/decision retention). `terraform/` contains only empty placeholder directories (`.gitkeep`) for these services today.
+Target hosting for the production system: S3 (file storage; the local disposition executor above is the local PoC equivalent of the eventual S3 copy → verify → delete workflow), EventBridge/SQS (intake and event routing), ECR/EKS (container hosting), CloudWatch (observability), KMS (key management), DynamoDB (evidence/decision retention). `terraform/` contains only empty placeholder directories (`.gitkeep`) for these services today.
 
 ### VirusTotal / Cuckoo (CuckooBox) — *optional, policy-gated, not implemented*
 

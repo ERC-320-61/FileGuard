@@ -83,3 +83,6 @@ eicar.com.txt
 
 # Temporary local Strelka wrapper captures
 /*-wrapper.json
+
+# Local disposition executor runtime data (never a committed data store)
+/local-data/

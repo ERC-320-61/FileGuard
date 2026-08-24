@@ -26,17 +26,21 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full component detail.
 
 ## Current implementation phase
 
-**Phase 3 complete: all four OPA disposition outcomes implemented and validated.**
+**Phase 4 complete: local disposition execution implemented and validated, on top of the completed four-outcome OPA policy.**
 
-- `CLEAN`, `INCOMPLETE`, `SUSPICIOUS`, `MALICIOUS` — all implemented, unit-tested, and validated end-to-end against real Strelka output (not just synthetic fixtures): a real clean file → `CLEAN`; a real captured wrapper → `INCOMPLETE`; the harmless `FILEGUARD_YARA_TEST` marker → `SUSPICIOUS`; a safe EICAR artifact via ClamAV → `MALICIOUS`.
-- Precedence: `MALICIOUS` > `INCOMPLETE` > `SUSPICIOUS` > `CLEAN` > default fail-closed `INCOMPLETE`. A confirmed ClamAV detection stays `MALICIOUS` even if other analysis in the same evidence is incomplete — `clamav.detected == true` is the sole MALICIOUS trigger.
-- Next phase: **local disposition execution** (acting on OPA decisions — file movement/tagging per conclusion). Not started — do not begin without explicit direction.
+- `CLEAN`, `INCOMPLETE`, `SUSPICIOUS`, `MALICIOUS` — all implemented, unit-tested, and validated end-to-end against real Strelka output. Precedence: `MALICIOUS` > `INCOMPLETE` > `SUSPICIOUS` > `CLEAN` > default fail-closed `INCOMPLETE`; `clamav.detected == true` is the sole MALICIOUS trigger.
+- Local disposition execution (`disposition.py`) acts on OPA decisions: `CLEAN → clean/`, `INCOMPLETE`/`SUSPICIOUS`/`MALICIOUS → quarantine/`, via a fail-closed copy → verify (SHA-256) → atomic no-overwrite publish → source-delete sequence. Validated with real OPA in WSL (`41 passed, 0 skipped`).
+- Next phase: **CAPE integration**. Not started — do not begin without explicit direction.
 
 See [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) for the full checkpoint.
 
 ## Local pipeline runner
 
 `python -m pipeline <strelka-wrapper.json>` runs the full chain (extractor → normalizer → schema validation → OPA) and prints `{static_evidence, opa_decision}`. Fails closed on any stage error, including a missing/broken `opa` executable — never exits 0 without a valid decision. See `pipeline.py`.
+
+## Local disposition executor
+
+`python -m disposition <source> <decision.json> --clean-dir <dir> --quarantine-dir <dir>` (or `execute_disposition(source_path, decision, clean_dir, quarantine_dir)`) moves a file per an OPA decision: SHA-256 the source, copy to a temp file in the destination directory, SHA-256 the copy, compare, publish via `os.link` (atomically refuses to overwrite an existing destination — not an `exists()` pre-check), then delete the source. Malformed decisions or unrecognized/mismatched `(conclusion, destination)` pairs fail before any file is touched. If source deletion fails after a verified publish, that's still a `DispositionError` (stage `source_delete`, not success) — the destination copy is kept, not rolled back. Runtime directories live under the gitignored `/local-data/`, never committed. See `disposition.py`.
 
 ## ClamAV evidence
 
@@ -71,7 +75,7 @@ FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. `c
 ## Rules Codex should follow
 
 - Do not reintroduce Thorium as the current architecture.
-- Do not begin local disposition execution (or CAPE, IoCs, notifications, AWS) without explicit direction — current phase boundary is the completed four-outcome policy.
+- Do not begin CAPE integration (or IoCs, notifications, AWS) without explicit direction — current phase boundary is the completed local disposition executor.
 - Do not treat `scanners/` as current implementation; it is legacy/reference.
 - Do not treat `kubernetes/thorium/`, `schemas/verdict.schema.json`, `schemas/scanner-result.schema.json`, or `schemas/classifier-result.schema.json` as part of the current architecture — they are known legacy artifacts from the pre-Strelka/pre-OPA direction. See [docs/DECISIONS.md](docs/DECISIONS.md).
 - Preserve fail-closed behavior in any policy or normalizer change.
