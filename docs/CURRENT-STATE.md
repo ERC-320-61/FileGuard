@@ -28,32 +28,39 @@ Checkpoint as of 2026-08-22. Update this file as phases complete so a new sessio
   - Use the prebuilt stack (`strelka/build/docker-compose-no-build.yaml`) for this work, not `strelka/build/docker-compose.yaml` — the build-from-source file triggers the upstream Strelka test suite, which failed locally on a missing upstream fixture (`strelka/strelka/tests/fixtures/test.xls`) unrelated to FileGuard configuration; that build path was not troubleshot as it's out of scope.
   - Runtime validation (2026-08-23, prebuilt image `target/strelka-backend:latest`, recreated via `docker compose -f strelka/build/docker-compose-no-build.yaml -f docker-compose.strelka.override.yml up -d --force-recreate backend`): in-container `/etc/strelka/backend.yaml` shows `compiled.enabled: False`; in-container `/etc/strelka/yara/rules.yara` shows only `FileGuard_Harmless_Test_Marker` (no `rule test`); `diff` between the running container's files and the tracked `config/strelka/` files was empty for both (identical).
   - Strelka image pinning (`target/strelka-backend:latest`) is a separate, deliberately deferred reproducibility gap — not addressed by this config-tracking work.
+- Four-outcome OPA disposition policy completed and fully validated, real-world, end-to-end (2026-08-23):
+  - `policies/fileguard/disposition.rego` restructured into a single deterministic `decision ... if { } else := ... if { }` chain (replacing three independent complete-rule definitions) implementing precedence `MALICIOUS > INCOMPLETE > SUSPICIOUS > CLEAN > default fail-closed INCOMPLETE`. A confirmed ClamAV detection (`clamav.status == "complete" AND clamav.detected == true`) is `MALICIOUS` even when other analysis in the same evidence document is incomplete — the destination is `quarantine` either way, but `MALICIOUS` preserves the stronger, more informative analyst-facing conclusion. No rule-name special-casing was added anywhere in policy code.
+  - Synthetic fixtures (`tests/fixtures/fileguard/static-evidence.suspicious.json`, `.malicious.json`) plus 5 new tests in `tests/test_fileguard_policy.py` cover SUSPICIOUS, MALICIOUS, and every precedence/edge case (ClamAV-outranks-YARA, ClamAV-outranks-incomplete-status, incomplete-status-with-YARA-match-stays-INCOMPLETE).
+  - **Real end-to-end pipeline validation completed for all four conclusions**, each via `python -m pipeline <wrapper.json>` against genuine Strelka output (not synthetic evidence): CLEAN (a real clean text file), INCOMPLETE (the tracked `image.jpg.real.json` wrapper), SUSPICIOUS (a fresh file containing `FILEGUARD_YARA_TEST`, matching the harmless `FileGuard_Harmless_Test_Marker` YARA rule — proves the pipeline escalates on a real match, not malware detection), and MALICIOUS (a safe, standard EICAR test artifact, detected by ClamAV — proves MALICIOUS is ClamAV-driven, since YARA correctly found no match on that content). All four exited `0` with the exact expected decision object. No application, policy, or config defect was exposed by any of these real-path runs.
+  - ClamAV signature-name preservation implemented: `normalizers/strelka.py` now extracts detection names from raw `scan.clamav` values ending in `" FOUND"` (distinguishing them from fixed metadata keys like `Engine version`/`Infected files`/`elapsed` by value shape, not key allowlisting), deduplicating while preserving first-seen order, into a new `clamav.signatures` array (`schemas/static-evidence.schema.json` updated to match, `[]` on clean scans). The real EICAR run normalized to `signatures: ["Eicar-Test-Signature"]`. `clamav.detected` remains the only field OPA reads for MALICIOUS — signatures are evidence only, not a policy input. Per-child/temporary-path attribution is explicitly deferred; a future structured detection record can add that if needed.
+  - Full test suite confirmed passing with real OPA in WSL: `22 passed, 0 skipped` after policy work, `15 passed, 12 skipped` (12 = OPA-gated tests, environment-dependent) most recently confirmed in this session's shell without `opa` on PATH — the WSL run with real OPA is the authoritative one.
+  - `requirements-dev.txt` (repo root, added during the CI task) now declares `pytest` and `jsonschema` — the earlier "no root requirements manifest" limitation is resolved.
+  - Temporary root-level `*-wrapper.json` validation captures are gitignored (`/*-wrapper.json`, root-anchored) and must not be committed; sanitized regression fixtures belong under `tests/fixtures/...` instead.
 
 ## Current phase
 
-**Phase 3: OPA policy decisions.**
+**Phase 3 complete: four-outcome OPA disposition policy implemented and validated, real-world end-to-end.** Next: Phase 4, local disposition execution.
 
 ## Current task
 
-CLEAN is implemented and tested. The active task is validating that CLEAN behaves correctly across more evidence shapes before extending the ruleset.
+None active — awaiting explicit direction to begin Phase 4 (local disposition execution: acting on OPA decisions, e.g. file movement/tagging per conclusion). No disposition-execution code exists yet.
 
 ## Tests currently passing
 
-- `tests/test_strelka_extractor.py`, `tests/test_strelka_normalizer.py` — pass (require `jsonschema`; no root-level requirements manifest exists yet, install manually).
-- `tests/test_fileguard_policy.py` — passes when `opa` is on PATH (verified by the developer in WSL, OPA 1.19.1). Tests self-skip via `unittest.skipUnless` when `opa` is not found, so a clean unittest run in an environment without OPA on PATH will silently skip these 5 tests rather than fail. Not every execution environment (e.g. this session's default shell) has `opa` on PATH — treat that as an environment difference, not evidence OPA is missing from the project.
+- `tests/test_strelka_extractor.py`, `tests/test_strelka_normalizer.py`, `tests/test_pipeline.py` (non-OPA tests) — pass unconditionally (install deps via `pip install -r requirements-dev.txt`).
+- `tests/test_fileguard_policy.py` and the OPA-dependent tests in `tests/test_pipeline.py` — pass when `opa` is on PATH; confirmed with real OPA 1.19.1 in the developer's WSL environment (`22 passed, 0 skipped`). Tests self-skip via `unittest.skipUnless` when `opa` is not found — an execution environment without `opa` on PATH (e.g. this session's default shell) is an environment difference, not evidence of a defect.
 
 ## Known limitations
 
-- No root-level Python dependency manifest (`requirements.txt` / `pyproject.toml`) for `extractors/`, `normalizers/`, or `tests/` — `jsonschema` must be installed manually.
-- OPA policy tests are environment-dependent (require `opa` on PATH) and skip silently rather than fail when it's absent.
-- Only `INCOMPLETE` and `CLEAN` disposition conclusions exist; `SUSPICIOUS` and `MALICIOUS` are undefined, so any evidence that doesn't match the CLEAN or incomplete rules falls through to the fail-closed `INCOMPLETE` default.
-- No disposition worker exists to act on OPA decisions.
+- OPA policy/pipeline tests are environment-dependent (require `opa` on PATH) and skip silently rather than fail when it's absent.
+- No disposition worker exists to act on OPA decisions — this is the next phase.
 - CAPE, AWS, VirusTotal, and Cuckoo integrations are undesigned beyond the architectural placement described in `docs/ARCHITECTURE.md`.
+- ClamAV signature evidence does not yet retain per-child/temporary-file-path attribution — only deduplicated signature names.
 - `scanners/`, `kubernetes/thorium/`, and the `verdict`/`scanner-result`/`classifier-result` schemas are legacy artifacts from the pre-Strelka/pre-OPA direction (see `docs/DECISIONS.md`) and should not be extended as if they were current.
 
 ## What must NOT be implemented yet
 
-- `SUSPICIOUS` or `MALICIOUS` OPA disposition rules.
+- Local disposition execution (file movement/tagging based on OPA decisions) — do not begin without explicit direction.
 - CAPE integration.
 - S3 disposition execution or any AWS service integration.
 - Scaling work of any kind.
@@ -61,4 +68,4 @@ CLEAN is implemented and tested. The active task is validating that CLEAN behave
 
 ## Immediate next step
 
-Validate the completed CLEAN policy and decide which disposition conclusion to implement next.
+Begin Phase 4 (local disposition execution) once explicitly approved — no code exists for this phase yet.

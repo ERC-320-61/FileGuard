@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "source": "strelka",
+  "status": "complete",
+  "request_id": "request-malicious-001",
+  "file": {
+    "filename": "malicious-fixture.bin",
+    "size_bytes": 4096,
+    "depth": 0,
+    "flavors": {"mime": ["application/octet-stream"]},
+    "scanners_run": ["hash", "clamav", "yara", "entropy"]
+  },
+  "hashes": {
+    "md5": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "sha1": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "sha256": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+    "ssdeep": "3:malicious-fixture:malicious-fixture",
+    "tlsh": "T1MALICIOUS0FIXTURE0PLACEHOLDER0VALUE0ONLY0NOT0REAL0DATA000000"
+  },
+  "clamav": {"status": "complete", "detected": true, "signatures": ["Eicar-Test-Signature"], "engine_version": "1.4.2", "warnings": [], "errors": []},
+  "yara": {"status": "complete", "matches": [], "rules_loaded": 1, "flags": [], "warnings": [], "errors": []},
+  "entropy": {"status": "complete", "value": 7.8, "severity": "informational", "warnings": [], "errors": []},
+  "insights": [],
+  "warnings": [],
+  "errors": []
+}

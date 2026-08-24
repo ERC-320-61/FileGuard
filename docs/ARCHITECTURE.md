@@ -6,11 +6,11 @@ This document describes FileGuard's current and planned components. It reflects 
 
 ```
 Strelka UI/API wrapper
-  → FileGuard extractor
-  → raw Strelka event
-  → FileGuard normalizer
-  → normalized static evidence
-  → OPA policy decision
+  - FileGuard extractor
+  - raw Strelka event
+  - FileGuard normalizer
+  - normalized static evidence
+  - OPA policy decision
 ```
 
 ### Strelka — *implemented*
@@ -35,18 +35,18 @@ Third-party static-analysis framework. Runs locally (see `strelka/`, a gitignore
 
 `schemas/static-evidence.schema.json`. The stable contract between the normalizer and the policy layer. `source` is currently pinned to `"strelka"`. This is the schema in active use — see [DECISIONS.md](DECISIONS.md) for why policy is coupled to this normalized shape rather than directly to raw Strelka output.
 
-### OPA — *implemented (partial ruleset)*
+### OPA — *four-outcome static disposition ruleset implemented*
 
 `policies/fileguard/disposition.rego`, package `fileguard.disposition`. Consumes normalized static evidence and produces a decision object: `{conclusion, destination, review_required, reasons}`.
 
-Conclusion vocabulary: `CLEAN`, `SUSPICIOUS`, `MALICIOUS`, `INCOMPLETE`.
-
-Implemented rules:
+Conclusion vocabulary: `CLEAN`, `SUSPICIOUS`, `MALICIOUS`, `INCOMPLETE` — all four implemented as a single deterministic decision chain, evaluated in precedence order:
+- **`MALICIOUS`:** clamav complete and detected → quarantine, review required. Takes precedence even over incomplete analysis elsewhere in the same evidence.
+- **`INCOMPLETE`:** document status incomplete (and not already `MALICIOUS`) → quarantine, review required.
+- **`SUSPICIOUS`:** yara complete with one or more matches, no stronger detection → quarantine, review required.
+- **`CLEAN`:** document status complete, clamav complete and not detected, yara complete with zero matches, zero document-level warnings and errors → destination clean, no review required.
 - **Default (fail-closed):** no rule matched → `INCOMPLETE`, quarantine, review required.
-- **`status == "incomplete"`** → `INCOMPLETE`, quarantine, review required.
-- **`CLEAN`:** document status complete, clamav complete and not detected, yara complete with zero matches, zero document-level warnings and errors → `CLEAN`, destination clean, no review required.
 
-Not implemented: any rule producing `SUSPICIOUS` or `MALICIOUS`.
+See [DECISIONS.md](DECISIONS.md) for the precedence rationale.
 
 ## Planned components
 

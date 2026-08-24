@@ -80,3 +80,6 @@ eicar.com
 eicar.com.txt
 /strelka/
 .claude/settings.local.json
+
+# Temporary local Strelka wrapper captures
+/*-wrapper.json

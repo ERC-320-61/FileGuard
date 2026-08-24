@@ -17,7 +17,7 @@
     "ssdeep": "6144:clean-fixture:clean-fixture",
     "tlsh": "T1A2B3C4D5E6F77889900AABBCCDDEEFF00112233445566778899AABBCCDDEEFF0011223"
   },
-  "clamav": {"status": "complete", "detected": false, "engine_version": "1.4.2", "warnings": [], "errors": []},
+  "clamav": {"status": "complete", "detected": false, "signatures": [], "engine_version": "1.4.2", "warnings": [], "errors": []},
   "yara": {"status": "complete", "matches": [], "rules_loaded": 1, "flags": [], "warnings": [], "errors": []},
   "entropy": {"status": "complete", "value": 5.25, "severity": "informational", "warnings": [], "errors": []},
   "insights": [],

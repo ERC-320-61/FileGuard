@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0.0",
+  "source": "strelka",
+  "status": "complete",
+  "request_id": "request-suspicious-001",
+  "file": {
+    "filename": "suspicious-fixture.bin",
+    "size_bytes": 2048,
+    "depth": 0,
+    "flavors": {"mime": ["application/octet-stream"]},
+    "scanners_run": ["hash", "clamav", "yara", "entropy"]
+  },
+  "hashes": {
+    "md5": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "sha1": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "sha256": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+    "ssdeep": "3:suspicious-fixture:suspicious-fixture",
+    "tlsh": "T1SUSPICIOUS0FIXTURE0PLACEHOLDER0VALUE0ONLY0NOT0REAL0DATA00000"
+  },
+  "clamav": {"status": "complete", "detected": false, "signatures": [], "engine_version": "1.4.2", "warnings": [], "errors": []},
+  "yara": {"status": "complete", "matches": ["Test_Suspicious_Indicator"], "rules_loaded": 2, "flags": [], "warnings": [], "errors": []},
+  "entropy": {"status": "complete", "value": 6.1, "severity": "informational", "warnings": [], "errors": []},
+  "insights": [],
+  "warnings": [],
+  "errors": []
+}

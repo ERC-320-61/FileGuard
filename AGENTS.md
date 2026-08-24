@@ -26,19 +26,28 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full component detail.
 
 ## Current implementation phase
 
-**Phase 3: OPA policy decisions.**
+**Phase 3 complete: all four OPA disposition outcomes implemented and validated.**
 
-- `INCOMPLETE` (fail-closed default + explicit incomplete-status rule) — implemented and tested.
-- `CLEAN` — implemented and tested.
-- `SUSPICIOUS` and `MALICIOUS` — **not yet implemented. Do not add them without explicit direction.**
+- `CLEAN`, `INCOMPLETE`, `SUSPICIOUS`, `MALICIOUS` — all implemented, unit-tested, and validated end-to-end against real Strelka output (not just synthetic fixtures): a real clean file → `CLEAN`; a real captured wrapper → `INCOMPLETE`; the harmless `FILEGUARD_YARA_TEST` marker → `SUSPICIOUS`; a safe EICAR artifact via ClamAV → `MALICIOUS`.
+- Precedence: `MALICIOUS` > `INCOMPLETE` > `SUSPICIOUS` > `CLEAN` > default fail-closed `INCOMPLETE`. A confirmed ClamAV detection stays `MALICIOUS` even if other analysis in the same evidence is incomplete — `clamav.detected == true` is the sole MALICIOUS trigger.
+- Next phase: **local disposition execution** (acting on OPA decisions — file movement/tagging per conclusion). Not started — do not begin without explicit direction.
 
-See [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) for the full checkpoint and immediate next step.
+See [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) for the full checkpoint.
+
+## Local pipeline runner
+
+`python -m pipeline <strelka-wrapper.json>` runs the full chain (extractor → normalizer → schema validation → OPA) and prints `{static_evidence, opa_decision}`. Fails closed on any stage error, including a missing/broken `opa` executable — never exits 0 without a valid decision. See `pipeline.py`.
+
+## ClamAV evidence
+
+Normalized `clamav.signatures` retains detected signature names (e.g. `"Eicar-Test-Signature"`) as a deduplicated, first-seen-order list — `[]` on clean scans. Signature names are evidence for analysts and future intelligence use only; `clamav.detected == true` remains the sole MALICIOUS policy trigger.
 
 ## Key security principles
 
 - **Fail closed.** Incomplete analysis, scanner failure, or any warning that prevents a clean determination must never resolve to `CLEAN`.
 - Never commit malware samples, secrets, credentials, private keys, controlled information, or sensitive analysis output.
 - External integrations (VirusTotal, Cuckoo) must remain optional and policy-gated, not hard dependencies.
+- Temporary root-level `*-wrapper.json` validation captures are gitignored — never commit them; sanitized regression fixtures belong under `tests/fixtures/...`.
 
 ## Strelka/YARA invariant
 
@@ -62,7 +71,7 @@ FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. `c
 ## Rules Codex should follow
 
 - Do not reintroduce Thorium as the current architecture.
-- Do not implement `SUSPICIOUS` or `MALICIOUS` policy rules without explicit direction — current next step is to validate `CLEAN` and decide what comes next.
+- Do not begin local disposition execution (or CAPE, IoCs, notifications, AWS) without explicit direction — current phase boundary is the completed four-outcome policy.
 - Do not treat `scanners/` as current implementation; it is legacy/reference.
 - Do not treat `kubernetes/thorium/`, `schemas/verdict.schema.json`, `schemas/scanner-result.schema.json`, or `schemas/classifier-result.schema.json` as part of the current architecture — they are known legacy artifacts from the pre-Strelka/pre-OPA direction. See [docs/DECISIONS.md](docs/DECISIONS.md).
 - Preserve fail-closed behavior in any policy or normalizer change.
@@ -71,13 +80,16 @@ FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. `c
 ## Test commands
 
 ```bash
-# Extractor and normalizer tests (requires jsonschema; no root requirements file yet — install manually)
+# Install test dependencies (pytest, jsonschema)
+pip install -r requirements-dev.txt
+
+# Extractor and normalizer tests
 python -m pytest tests/test_strelka_extractor.py tests/test_strelka_normalizer.py -q
 
-# OPA policy tests (requires the `opa` CLI on PATH; auto-skip if absent)
-python -m pytest tests/test_fileguard_policy.py -q
+# OPA policy and pipeline tests (require the `opa` CLI on PATH; auto-skip if absent)
+python -m pytest tests/test_fileguard_policy.py tests/test_pipeline.py -q
 
-# Full suite
+# Full suite — passes with 0 skips when `opa` is on PATH (confirmed in WSL, OPA 1.19.1)
 python -m pytest tests/ -q
 ```
 

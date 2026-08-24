@@ -37,10 +37,11 @@
     "clamav": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["status", "detected", "engine_version", "warnings", "errors"],
+      "required": ["status", "detected", "signatures", "engine_version", "warnings", "errors"],
       "properties": {
         "status": {"enum": ["complete", "incomplete", "error"]},
         "detected": {"type": ["boolean", "null"]},
+        "signatures": {"type": "array", "items": {"type": "string", "minLength": 1}},
         "engine_version": {"type": ["string", "null"]},
         "warnings": {"$ref": "#/$defs/conditions"},
         "errors": {"$ref": "#/$defs/conditions"}

@@ -46,6 +46,16 @@ def _classify_conditions(scanner: str, result: dict[str, Any]) -> tuple[list[dic
     return warnings, errors
 
 
+def _clamav_signatures(clam_raw: dict[str, Any]) -> list[str]:
+    signatures: list[str] = []
+    for value in clam_raw.values():
+        if isinstance(value, str) and value.endswith(" FOUND"):
+            signature = value[: -len(" FOUND")]
+            if signature not in signatures:
+                signatures.append(signature)
+    return signatures
+
+
 def _status(warnings: list[Any], errors: list[Any]) -> str:
     if errors:
         return "error"
@@ -80,12 +90,15 @@ def normalize_strelka(raw: Any) -> dict[str, Any]:
     document_errors.extend(clam_errors)
     infected = clam_raw.get("Infected files")
     detected = None
+    signatures: list[str] = []
     if infected is not None and not clam_errors:
         try:
             detected = int(infected) > 0
         except (TypeError, ValueError):
             clam_warnings.append(_condition("clamav", "invalid_infected_files", str(infected)))
             document_warnings.append(clam_warnings[-1])
+    if not clam_errors:
+        signatures = _clamav_signatures(clam_raw)
 
     yara_raw = scan.get("yara", {})
     yara_warnings, yara_errors = _classify_conditions("yara", yara_raw)
@@ -124,6 +137,7 @@ def normalize_strelka(raw: Any) -> dict[str, Any]:
         "clamav": {
             "status": _status(clam_warnings, clam_errors),
             "detected": detected,
+            "signatures": signatures,
             "engine_version": clam_raw.get("Engine version"),
             "warnings": clam_warnings,
             "errors": clam_errors,
