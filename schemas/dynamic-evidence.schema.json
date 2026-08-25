@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://fileguard.local/schemas/dynamic-evidence.schema.json",
+  "title": "FileGuard Normalized Dynamic Evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source", "analysis", "target", "behavior", "signatures", "ttps"],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["engine"],
+      "properties": {
+        "engine": {"const": "cape"}
+      }
+    },
+    "analysis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["task_id", "duration_seconds", "score", "malstatus"],
+      "properties": {
+        "task_id": {"type": ["integer", "null"], "minimum": 0},
+        "duration_seconds": {"type": ["number", "null"], "minimum": 0},
+        "score": {"type": ["number", "null"]},
+        "malstatus": {"type": ["string", "null"]}
+      }
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "sha256", "md5", "size", "type"],
+      "properties": {
+        "name": {"type": ["string", "null"]},
+        "sha256": {"type": ["string", "null"]},
+        "md5": {"type": ["string", "null"]},
+        "size": {"type": ["integer", "null"], "minimum": 0},
+        "type": {"type": ["string", "null"]}
+      }
+    },
+    "behavior": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["process_count", "process_tree_count", "process_names"],
+      "properties": {
+        "process_count": {"type": "integer", "minimum": 0},
+        "process_tree_count": {"type": "integer", "minimum": 0},
+        "process_names": {"type": "array", "items": {"type": "string"}}
+      }
+    },
+    "signatures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "severity", "description"],
+        "properties": {
+          "name": {"type": ["string", "null"]},
+          "severity": {"type": ["number", "null"]},
+          "description": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "ttps": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^T\\d{4}(\\.\\d{3})?$"},
+      "uniqueItems": true
+    }
+  }
+}

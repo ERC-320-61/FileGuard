@@ -26,11 +26,11 @@ See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for full component detail.
 
 ## Current implementation phase
 
-**Phase 4 complete: local disposition execution implemented and validated, on top of the completed four-outcome OPA policy.**
+**Phase 5 in progress: CAPE dynamic-analysis local lab operational; FileGuard application integration not yet implemented.** (Phase 4, local disposition execution, is complete — see below.)
 
 - `CLEAN`, `INCOMPLETE`, `SUSPICIOUS`, `MALICIOUS` — all implemented, unit-tested, and validated end-to-end against real Strelka output. Precedence: `MALICIOUS` > `INCOMPLETE` > `SUSPICIOUS` > `CLEAN` > default fail-closed `INCOMPLETE`; `clamav.detected == true` is the sole MALICIOUS trigger.
 - Local disposition execution (`disposition.py`) acts on OPA decisions: `CLEAN → clean/`, `INCOMPLETE`/`SUSPICIOUS`/`MALICIOUS → quarantine/`, via a fail-closed copy → verify (SHA-256) → atomic no-overwrite publish → source-delete sequence. Validated with real OPA in WSL (`41 passed, 0 skipped`).
-- Next phase: **CAPE integration**. Not started — do not begin without explicit direction.
+- **CAPE:** a local dynamic-analysis lab (Ubuntu host, KVM/libvirt, isolated Windows sandbox) is built and operational through service-readiness — [docs/CAPE.md](docs/CAPE.md) is the source of truth for this phase. No FileGuard application code talks to CAPE yet (no `cape_client.py`, no eligibility routing), and first end-to-end harmless behavioral validation is still pending — do not describe CAPE dynamic analysis as complete. CAPE is an external dependency, same as Strelka — it must never be vendored into this repository. Any local infrastructure detail (libvirt, KVM, snapshots, host paths) must stay behind CAPE's HTTP API boundary and never leak into FileGuard's own code.
 
 See [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) for the full checkpoint.
 
@@ -75,7 +75,7 @@ FileGuard currently uses source `.yar`/`.yara` rules, not a compiled ruleset. `c
 ## Rules Codex should follow
 
 - Do not reintroduce Thorium as the current architecture.
-- Do not begin CAPE integration (or IoCs, notifications, AWS) without explicit direction — current phase boundary is the completed local disposition executor.
+- CAPE's local lab is infrastructure only — do not claim end-to-end CAPE behavioral analysis is complete, and do not begin FileGuard CAPE application integration (`cape_client.py`, eligibility routing) or AWS CAPE deployment without explicit direction. Do not begin IoCs, notifications, or other AWS work either.
 - Do not treat `scanners/` as current implementation; it is legacy/reference.
 - Do not treat `kubernetes/thorium/`, `schemas/verdict.schema.json`, `schemas/scanner-result.schema.json`, or `schemas/classifier-result.schema.json` as part of the current architecture — they are known legacy artifacts from the pre-Strelka/pre-OPA direction. See [docs/DECISIONS.md](docs/DECISIONS.md).
 - Preserve fail-closed behavior in any policy or normalizer change.
@@ -102,3 +102,4 @@ python -m pytest tests/ -q
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) — component responsibilities, implemented vs. planned.
 - [docs/CURRENT-STATE.md](docs/CURRENT-STATE.md) — project checkpoint, completed work, next step.
 - [docs/DECISIONS.md](docs/DECISIONS.md) — architectural decisions and rationale.
+- [docs/CAPE.md](docs/CAPE.md) — CAPE dynamic-analysis lab: verified baseline, lessons learned, AWS portability. Source of truth for the current CAPE phase.

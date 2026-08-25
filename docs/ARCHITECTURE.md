@@ -54,9 +54,19 @@ See [DECISIONS.md](DECISIONS.md) for the precedence rationale.
 
 ## Planned components
 
-### CAPE dynamic analysis — *planned, not deferred*
+### CAPE dynamic analysis — *planned — local lab infrastructure operational, FileGuard application integration not yet implemented*
 
-Internal dynamic-analysis layer for files that are quarantined and eligible for further analysis. Explicitly part of the architecture (mentioned in `README.md`), but no integration code exists yet. Distinct from the optional external sandboxing integrations below.
+Internal dynamic-analysis layer for files that are quarantined and eligible for further analysis. Explicitly part of the architecture (mentioned in `README.md`), not an optional add-on.
+
+Target shape:
+
+```
+FileGuard → private CAPE API → CAPE host → KVM/libvirt → disposable Windows sandbox
+```
+
+FileGuard is intended to interact with CAPE only through this API/client boundary — never by controlling libvirt, KVM, or guest internals directly, so the same application logic works whether CAPE runs in a local development lab or on AWS. Only `SUSPICIOUS`-dispositioned files are currently expected to be CAPE-eligible; `CLEAN` files never reach CAPE, and CAPE does not decide disposition or auto-release files from Quarantine — it enriches analyst evidence.
+
+A local development lab (Ubuntu host, KVM/libvirt, an isolated Windows analysis guest) has been built and is operational through service-readiness — see [docs/CAPE.md](CAPE.md) for the full verified baseline, lessons learned, and AWS portability notes. Hyper-V is specific to that local lab machine, not an architectural dependency; the eventual AWS target uses a nested-virtualization-capable EC2 instance in its place. No FileGuard application code (API client, eligibility routing, dynamic evidence normalization) exists yet, and first end-to-end harmless behavioral validation is still pending.
 
 ### AWS services — *planned, not implemented*
 

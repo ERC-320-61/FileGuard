@@ -46,14 +46,20 @@ Checkpoint as of 2026-08-22. Update this file as phases complete so a new sessio
   - Runtime directories live under `/local-data/` (`intake/`, `clean/`, `quarantine/`) at repo root, newly gitignored (`/local-data/`) — never a committed data store. Tests use `tempfile.TemporaryDirectory()`, not the real directory.
   - `tests/test_disposition.py` adds 14 tests (collision refusal, verification-failure preserves source, malformed/unknown/mismatched decisions preserve source, missing source, source-is-a-directory, missing destination directory, source-delete failure, plus all four conclusion → destination routings). Full suite confirmed with real OPA in WSL: **41 passed, 0 skipped**.
   - Not touched: `pipeline.py` (the executor is not yet wired into the pipeline's output), OPA policy, normalizer, schema, Strelka, CI.
+- CAPE dynamic-analysis local lab established and validated through service-readiness (in progress, 2026-08-23) — full detail in [docs/CAPE.md](CAPE.md), the source of truth for this phase:
+  - Local topology built: Windows host → Hyper-V → Ubuntu CAPE VM (`FileGuard-CAPE`, Ubuntu 24.04, nested virtualization enabled) → CAPEv2/MongoDB/KVM-libvirt → isolated Windows analysis guest (`fileguard-win-sandbox`) → CAPE agent. Hyper-V is local-lab-only, not an architectural dependency.
+  - Isolated libvirt network (`cape-isolated`, no external forwarding, no guest default gateway), Windows sandbox with the CAPE agent installed/elevated/reachable, and a known-good `clean` libvirt snapshot are all built and verified.
+  - CAPE's KVM machinery loads the configured sandbox and its scheduler reaches "Waiting for analysis tasks"; core services (`mongodb`, `cape`, `cape-rooter`, `cape-processor`, `cape-web`) are running and the web UI is reachable.
+  - Two operational lessons surfaced and resolved: a kernel/MongoDB incompatibility (resolved by booting the tested `6.8.0-138-generic` baseline, not a permanent mandate) and a disk/LVM sizing gap (a provisioned 100 GB disk whose root LV initially consumed only ~48.47 GB — expanded and verified). Both are documented in CAPE.md as durable lessons for future deployment automation, not one-off fixes.
+  - **Not yet done:** first end-to-end harmless behavioral submission through CAPE (orchestration, snapshot revert, report generation/retrieval), a FileGuard `cape_client.py`, CAPE report normalization, `SUSPICIOUS` → CAPE application integration, and any AWS CAPE deployment. Windows Server 2025 is a PoC-only guest choice, not a finalized production decision.
 
 ## Current phase
 
-**Phase 4 complete: local disposition execution implemented and validated, real-world end-to-end with real OPA.** Next: Phase 5, CAPE integration.
+**Phase 5 in progress: CAPE dynamic-analysis lab is operational locally; first end-to-end harmless behavioral validation is still pending.** See [docs/CAPE.md](CAPE.md) for the full checkpoint on this phase.
 
 ## Current task
 
-None active — awaiting explicit direction to begin Phase 5 (CAPE integration). No CAPE code exists yet.
+Complete the first end-to-end harmless CAPE behavioral analysis (submit the harmless FileGuard behavioral sample, confirm orchestration/snapshot-revert/report generation, and retrieve the report) before building the FileGuard CAPE API client.
 
 ## Tests currently passing
 
@@ -64,19 +70,21 @@ None active — awaiting explicit direction to begin Phase 5 (CAPE integration).
 
 - OPA policy/pipeline tests are environment-dependent (require `opa` on PATH) and skip silently rather than fail when it's absent.
 - The disposition executor is local-only and standalone — not yet wired into `pipeline.py`'s output, and the local directory model (`local-data/intake|clean|quarantine`) is the local equivalent of, not a replacement for, the future AWS S3 copy → verify → delete workflow.
-- CAPE, AWS, VirusTotal, and Cuckoo integrations are undesigned beyond the architectural placement described in `docs/ARCHITECTURE.md`.
+- The CAPE local lab (see docs/CAPE.md) is infrastructure only — no FileGuard application code talks to CAPE yet, and first end-to-end harmless behavioral validation has not been completed. Windows Server 2025 is a PoC guest choice, not a finalized production OS decision.
+- AWS, VirusTotal, and Cuckoo integrations are undesigned beyond the architectural placement described in `docs/ARCHITECTURE.md`.
 - ClamAV signature evidence does not yet retain per-child/temporary-file-path attribution — only deduplicated signature names.
 - `scanners/`, `kubernetes/thorium/`, and the `verdict`/`scanner-result`/`classifier-result` schemas are legacy artifacts from the pre-Strelka/pre-OPA direction (see `docs/DECISIONS.md`) and should not be extended as if they were current.
 
 ## What must NOT be implemented yet
 
-- CAPE integration — do not begin without explicit direction.
+- FileGuard ↔ CAPE application integration (`cape_client.py`, `SUSPICIOUS` routing, dynamic evidence normalization) — the local lab is infrastructure only; do not claim end-to-end CAPE behavioral analysis is complete.
+- AWS CAPE deployment or Terraform for CAPE.
 - IoCs, notifications.
-- S3 disposition execution or any AWS service integration.
+- S3 disposition execution or any other AWS service integration.
 - Kubernetes.
 - Scaling work of any kind.
 - Do not reintroduce Thorium as the current architecture.
 
 ## Immediate next step
 
-Begin Phase 5 (CAPE integration) once explicitly approved — no code exists for this phase yet.
+Complete the first end-to-end harmless CAPE behavioral analysis locally (see docs/CAPE.md's "Current Validation Status — Pending" list), then build the FileGuard CAPE API client.
